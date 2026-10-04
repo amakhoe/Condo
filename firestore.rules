@@ -1,0 +1,62 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Units / Quartos
+    match /units/{unitId} {
+      allow read: if true;
+      allow write: if isValidId(unitId);
+    }
+
+    // Tenants / Inquilinos
+    match /tenants/{tenantId} {
+      allow read: if true;
+      allow write: if isValidId(tenantId);
+    }
+
+    // Equipe de Limpeza
+    match /cleaning_staff/{staffId} {
+      allow read: if true;
+      allow write: if isValidId(staffId);
+    }
+
+    // Escalas de Trabalho de Limpeza
+    match /cleaning_schedules/{scheduleId} {
+      allow read: if true;
+      allow write: if isValidId(scheduleId);
+    }
+
+    // Relatórios de Manutenção / Defeitos
+    match /maintenance_reports/{reportId} {
+      allow read: if true;
+      allow write: if isValidId(reportId);
+    }
+
+    // Avisos e Notificações do Condomínio
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow write: if isValidId(announcementId);
+    }
+
+    // Pagamentos de Mensalidades
+    match /payments/{paymentId} {
+      allow read: if true;
+      allow write: if isValidId(paymentId);
+    }
+
+    // Test connection doc
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "entities": {
+    "Tenant": {
+      "title": "Tenant",
+      "description": "Morador ou inquilino registrado no condomínio",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "email": { "type": "string", "format": "email", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "document": { "type": "string", "maxLength": 50 },
+        "unitNumber": { "type": "string", "maxLength": 20 },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "emergencyContact": { "type": "string", "maxLength": 100 },
+        "moveInDate": { "type": "string", "maxLength": 30 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "unitNumber", "status"]
+    },
+    "Unit": {
+      "title": "Unit",
+      "description": "Quarto ou unidade/apartamento do condomínio",
+      "type": "object",
+      "properties": {
+        "unitNumber": { "type": "string", "maxLength": 20 },
+        "block": { "type": "string", "maxLength": 50 },
+        "floor": { "type": "string", "maxLength": 20 },
+        "type": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["available", "occupied", "maintenance", "reserved"] },
+        "rentPrice": { "type": "number" },
+        "currentTenantId": { "type": "string", "maxLength": 100 },
+        "currentTenantName": { "type": "string", "maxLength": 100 },
+        "features": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["unitNumber", "type", "status"]
+    },
+    "CleaningStaff": {
+      "title": "CleaningStaff",
+      "description": "Funcionário da equipe de limpeza do condomínio",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "email": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["active", "vacation", "inactive"] },
+        "shiftPreference": { "type": "string", "maxLength": 50 },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "status"]
+    },
+    "CleaningSchedule": {
+      "title": "CleaningSchedule",
+      "description": "Escala de horários de trabalho de limpeza por turno e departamento",
+      "type": "object",
+      "properties": {
+        "staffId": { "type": "string", "maxLength": 100 },
+        "staffName": { "type": "string", "maxLength": 100 },
+        "date": { "type": "string", "maxLength": 20 },
+        "shift": { "type": "string", "enum": ["morning", "afternoon", "night"] },
+        "departmentOrArea": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["scheduled", "in_progress", "completed"] },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["staffName", "date", "shift", "departmentOrArea", "status"]
+    },
+    "MaintenanceReport": {
+      "title": "MaintenanceReport",
+      "description": "Relatório de defeito nas habitações enviado por inquilinos",
+      "type": "object",
+      "properties": {
+        "tenantName": { "type": "string", "maxLength": 100 },
+        "tenantContact": { "type": "string", "maxLength": 50 },
+        "unitNumber": { "type": "string", "maxLength": 20 },
+        "category": { "type": "string", "maxLength": 50 },
+        "urgency": { "type": "string", "enum": ["low", "medium", "high", "emergency"] },
+        "description": { "type": "string", "maxLength": 1000 },
+        "photoUrl": { "type": "string", "maxLength": 500 },
+        "status": { "type": "string", "enum": ["open", "reviewing", "scheduled", "resolved"] },
+        "adminNotes": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string" },
+        "resolvedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["unitNumber", "category", "urgency", "description", "status"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Aviso oficial e comunicado do condomínio com notificação push",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 150 },
+        "message": { "type": "string", "maxLength": 1000 },
+        "priority": { "type": "string", "enum": ["low", "normal", "urgent"] },
+        "category": { "type": "string", "maxLength": 50 },
+        "sentAt": { "type": "string" },
+        "authorName": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["title", "message", "priority"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Registo de pagamento de mensalidade ou renda de inquilino",
+      "type": "object",
+      "properties": {
+        "tenantName": { "type": "string", "maxLength": 100 },
+        "unitNumber": { "type": "string", "maxLength": 20 },
+        "amount": { "type": "number" },
+        "referenceMonth": { "type": "string", "maxLength": 30 },
+        "dueDate": { "type": "string", "maxLength": 30 },
+        "paymentDate": { "type": "string", "maxLength": 30 },
+        "status": { "type": "string", "enum": ["paid", "pending", "overdue"] },
+        "paymentMethod": { "type": "string", "maxLength": 50 },
+        "receiptNumber": { "type": "string", "maxLength": 50 },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["tenantName", "unitNumber", "amount", "referenceMonth", "dueDate", "status"]
+    }
+  },
+  "firestore": {
+    "/tenants/{tenantId}": {
+      "schema": "Tenant",
+      "description": "Coleção de inquilinos cadastrados"
+    },
+    "/units/{unitId}": {
+      "schema": "Unit",
+      "description": "Coleção de quartos e unidades do condomínio"
+    },
+    "/cleaning_staff/{staffId}": {
+      "schema": "CleaningStaff",
+      "description": "Coleção de funcionários da equipe de limpeza"
+    },
+    "/cleaning_schedules/{scheduleId}": {
+      "schema": "CleaningSchedule",
+      "description": "Escalas de trabalho de limpeza por turno e departamento"
+    },
+    "/maintenance_reports/{reportId}": {
+      "schema": "MaintenanceReport",
+      "description": "Relatórios de defeitos e manutenções em tempo real"
+    },
+    "/announcements/{announcementId}": {
+      "schema": "Announcement",
+      "description": "Avisos e comunicados importantes do condomínio para notificações push"
+    },
+    "/payments/{paymentId}": {
+      "schema": "Payment",
+      "description": "Coleção de pagamentos de mensalidades e recibos de rendas"
+    }
+  }
+}
