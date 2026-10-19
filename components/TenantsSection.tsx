@@ -72,8 +72,8 @@ export function TenantsSection({ tenants, units, onSelectTenantReports }: Tenant
       setEditingTenant(null);
       setName('');
       setEmail('');
-      setPhone('+351 ');
-      setDocumentNumber('NIF: ');
+      setPhone('+258 8');
+      setDocumentNumber('NUIT: ');
       setUnitNumber(availableUnits.length > 0 ? availableUnits[0].unitNumber : (units[0]?.unitNumber || ''));
       setStatus('active');
       setEmergencyContact('');
@@ -398,7 +398,7 @@ export function TenantsSection({ tenants, units, onSelectTenantReports }: Tenant
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+351 912 345 678"
+                    placeholder="+258 84 123 4567"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   />
                 </div>
@@ -409,7 +409,7 @@ export function TenantsSection({ tenants, units, onSelectTenantReports }: Tenant
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="morador@email.pt"
+                    placeholder="morador@gmail.com"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   />
                 </div>
@@ -417,12 +417,12 @@ export function TenantsSection({ tenants, units, onSelectTenantReports }: Tenant
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Documento / NIF</label>
+                  <label className="block text-slate-700 font-semibold mb-1">NUIT / B.I. Moçambicano</label>
                   <input
                     type="text"
                     value={documentNumber}
                     onChange={(e) => setDocumentNumber(e.target.value)}
-                    placeholder="NIF: 245981320"
+                    placeholder="NUIT: 400192837 | BI: 1101..."
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   />
                 </div>

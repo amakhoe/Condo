@@ -144,7 +144,11 @@ export interface Payment {
   id?: string;
   tenantName: string;
   unitNumber: string;
-  amount: number;
+  baseAmount?: number; // Valor Base sem IVA em Meticais (MT)
+  taxRate?: number;    // Taxa de IVA (16% em Moçambique)
+  taxAmount?: number;  // Valor do IVA em Meticais (MT)
+  amount: number;      // Total com IVA em Meticais (MT)
+  currency?: string;   // 'MT' ou 'MZN'
   referenceMonth: string;
   dueDate: string;
   paymentDate?: string;
@@ -152,6 +156,15 @@ export interface Payment {
   paymentMethod?: string;
   receiptNumber?: string;
   notes?: string;
+  createdAt: string;
+}
+
+export interface UserProfile {
+  uid: string;
+  email: string;
+  displayName: string;
+  role: 'admin' | 'tenant';
+  unitNumber?: string;
   createdAt: string;
 }
 

@@ -18,11 +18,15 @@ import {
   CreditCard,
   Euro,
   Clock,
-  FileText
+  FileText,
+  FileDown
 } from 'lucide-react';
 import { MaintenanceReport, Announcement, Unit, Payment, db, OperationType, handleFirestoreError } from '../lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { NotificationService } from '../lib/notifications';
+import { generateYearlyFinancialReportPDF } from '../lib/reportPdf';
+import { useAuth } from '../lib/authContext';
+import { formatMZN, MOZ_IVA_RATE, DEFAULT_CONDO_MOZ } from '../lib/utils';
 
 interface TenantPortalViewProps {
   reports: MaintenanceReport[];
@@ -41,13 +45,14 @@ const CATEGORIES = [
 ];
 
 export function TenantPortalView({ reports, announcements, units, payments = [] }: TenantPortalViewProps) {
-  const [selectedUnit, setSelectedUnit] = useState<string>('Q-101');
+  const { userProfile, user } = useAuth();
+  const [selectedUnit, setSelectedUnit] = useState<string>(() => userProfile?.unitNumber || 'Q-101');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form
-  const [tenantName, setTenantName] = useState('António Silva');
-  const [tenantContact, setTenantContact] = useState('+351 912 345 678');
+  const [tenantName, setTenantName] = useState(() => userProfile?.displayName || user?.email?.split('@')[0] || 'Arsénio Mabunda');
+  const [tenantContact, setTenantContact] = useState('+258 84 312 4589');
   const [category, setCategory] = useState(CATEGORIES[0].id);
   const [urgency, setUrgency] = useState<'low' | 'medium' | 'high' | 'emergency'>('high');
   const [description, setDescription] = useState('');
@@ -120,7 +125,7 @@ export function TenantPortalView({ reports, announcements, units, payments = [] 
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
-            Bem-vindo ao Solar dos Pinheiros
+            Bem-vindo ao {DEFAULT_CONDO_MOZ.name}
           </h2>
           <p className="text-sm text-blue-100 mt-2 leading-relaxed">
             Reporte anomalias e defeitos no seu quarto ou apartamento (eletricidade, canalização, fechaduras), acompanhe as reparações em tempo real e consulte todos os avisos oficiais do condomínio.
@@ -194,7 +199,29 @@ export function TenantPortalView({ reports, announcements, units, payments = [] 
             </div>
           </div>
 
-          <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => {
+                const unitObj = units.find((u) => u.unitNumber === selectedUnit);
+                generateYearlyFinancialReportPDF({
+                  unitNumber: selectedUnit,
+                  year: 2026,
+                  unit: unitObj,
+                  payments: (payments || []).filter((p) => p.unitNumber === selectedUnit),
+                  notes: 'Extrato emitido no Portal do Inquilino com discriminação fiscal de IVA (16% Moçambique).',
+                });
+                NotificationService.sendPush(`Extrato Anual PDF (MZN) Descarregado`, {
+                  body: `O extrato financeiro anual do quarto ${selectedUnit} foi gerado com sucesso.`,
+                  soundType: 'success',
+                });
+              }}
+              className="inline-flex items-center space-x-1 px-3 py-1 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-bold transition-all shadow-xs hover:border-blue-400"
+              title="Descarregar extrato anual e recibos consolidados em PDF"
+            >
+              <FileDown className="w-3.5 h-3.5 text-blue-600" />
+              <span>Extrato Anual PDF</span>
+            </button>
+
             {pendingPayment ? (
               <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${
                 pendingPayment.status === 'overdue'
@@ -251,49 +278,66 @@ export function TenantPortalView({ reports, announcements, units, payments = [] 
                     </span>
                   </div>
 
-                  <div className="flex items-baseline space-x-1 mb-2">
-                    <span className="text-xl font-black text-slate-900">{p.amount.toFixed(2)}</span>
-                    <span className="text-xs font-bold text-slate-500">€</span>
-                  </div>
+                  {(() => {
+                    const baseVal = p.baseAmount || Math.round((p.amount / (1 + MOZ_IVA_RATE)) * 100) / 100;
+                    const ivaVal = p.taxAmount || Math.round((p.amount - baseVal) * 100) / 100;
 
-                  <div className="space-y-1 text-slate-600 text-[11px] pt-2 border-t border-slate-200/60">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Vencimento:</span>
-                      <span className="font-medium text-slate-800">{p.dueDate}</span>
-                    </div>
+                    return (
+                      <>
+                        <div className="mb-2">
+                          <span className="text-xl font-black text-slate-900">{formatMZN(p.amount)}</span>
+                          <div className="text-[10px] text-slate-500 flex items-center space-x-1.5 mt-0.5">
+                            <span>Base: {formatMZN(baseVal, false)}</span>
+                            <span>•</span>
+                            <span className="text-blue-700 font-semibold">IVA (16%): +{formatMZN(ivaVal, false)}</span>
+                          </div>
+                        </div>
 
-                    {isPaid && p.paymentDate && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Pago em:</span>
-                        <span className="font-semibold text-emerald-700">{p.paymentDate}</span>
-                      </div>
-                    )}
+                        <div className="space-y-1 text-slate-600 text-[11px] pt-2 border-t border-slate-200/60">
+                          <div className="flex justify-between">
+                            <span className="text-slate-500">Vencimento:</span>
+                            <span className="font-medium text-slate-800">{p.dueDate}</span>
+                          </div>
 
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Método:</span>
-                      <span className="font-medium text-slate-800">{p.paymentMethod || 'MB WAY'}</span>
-                    </div>
+                          {isPaid && p.paymentDate && (
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">Pago em:</span>
+                              <span className="font-semibold text-emerald-700">{p.paymentDate}</span>
+                            </div>
+                          )}
 
-                    {p.receiptNumber && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Recibo:</span>
-                        <span className="font-mono text-blue-700 font-bold">{p.receiptNumber}</span>
-                      </div>
-                    )}
-                  </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-500">Canal:</span>
+                            <span className="font-semibold text-slate-800">{p.paymentMethod || 'M-Pesa / BIM'}</span>
+                          </div>
 
-                  {!isPaid && (
-                    <div className="mt-3 pt-2 border-t border-slate-200/80 bg-white/70 p-2 rounded-xl text-[11px] text-slate-700">
-                      <div className="font-bold text-blue-800 flex items-center space-x-1">
-                        <span>Dados de Pagamento ({p.paymentMethod || 'MB WAY'})</span>
-                      </div>
-                      <p className="mt-0.5 text-slate-500">
-                        {p.paymentMethod === 'MB WAY'
-                          ? 'Envie para o terminal do condomínio: 912 345 678'
-                          : 'Entidade: 21234 | Ref: 987 654 321'}
-                      </p>
-                    </div>
-                  )}
+                          {p.receiptNumber && (
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">Nº Recibo:</span>
+                              <span className="font-mono text-blue-700 font-bold">{p.receiptNumber}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {!isPaid && (
+                          <div className="mt-3 pt-2 border-t border-slate-200/80 bg-white/70 p-2.5 rounded-xl text-[11px] text-slate-700 space-y-1">
+                            <div className="font-bold text-blue-800 flex items-center space-x-1">
+                              <span>Instruções de Pagamento (Moçambique)</span>
+                            </div>
+                            <p className="text-[10px] text-slate-600">
+                              {p.paymentMethod?.includes('e-Mola')
+                                ? 'e-Mola Movitel: +258 87 321 0987 (Baía de Maputo)'
+                                : p.paymentMethod?.includes('BCI')
+                                ? 'BCI: Conta 49821034 | NIB 0008 0000 0049 8210 3410 8'
+                                : p.paymentMethod?.includes('BIM') || p.paymentMethod?.includes('Bancária')
+                                ? 'Millennium BIM: Conta 102938475 | NIB 0001 0000 0010 2938 4751 2'
+                                : 'M-Pesa Vodacom: +258 84 321 0987 (Baía de Maputo)'}
+                            </p>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               );
             })}

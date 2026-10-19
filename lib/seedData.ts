@@ -4,38 +4,38 @@ import { db, Unit, Tenant, CleaningStaff, CleaningSchedule, MaintenanceReport, A
 export async function seedCondominiumData() {
   const batch = writeBatch(db);
 
-  // 1. Quartos e Unidades
+  // 1. Quartos e Unidades em Meticais (MT) - Maputo / Moçambique
   const sampleUnits: Omit<Unit, 'id'>[] = [
     {
       unitNumber: 'Q-101',
-      block: 'Bloco A (Nascente)',
+      block: 'Bloco A (Vista Baía)',
       floor: '1º Andar',
       type: 'Quarto Suite Individual',
       status: 'occupied',
-      rentPrice: 420,
-      currentTenantName: 'António Silva',
-      features: 'Casa de banho privativa, Ar condicionado, Janela panorâmica',
+      rentPrice: 25000, // 25.000 MT
+      currentTenantName: 'Arsénio Mabunda',
+      features: 'Casa de banho privativa, Ar condicionado Split, Varanda com vista panorâmica para a Baía de Maputo',
       createdAt: new Date().toISOString(),
     },
     {
       unitNumber: 'Q-102',
       block: 'Bloco A (Nascente)',
       floor: '1º Andar',
-      type: 'Quarto Individual',
+      type: 'Quarto Individual Standard',
       status: 'available',
-      rentPrice: 350,
-      features: 'Mobilado, Cama de casal, Roupeiro embutido, Secretária de trabalho',
+      rentPrice: 18500, // 18.500 MT
+      features: 'Mobilado, Cama de casal, Guarda-fatos embutido, Ventoinha de teto, Secretária de trabalho',
       createdAt: new Date().toISOString(),
     },
     {
       unitNumber: 'Q-103',
-      block: 'Bloco A (Nascente)',
+      block: 'Bloco A (Vista Baía)',
       floor: '1º Andar',
-      type: 'Estúdio / Kitchenette',
+      type: 'Estúdio / Kitchenette Climatizada',
       status: 'occupied',
-      rentPrice: 580,
-      currentTenantName: 'Beatriz Martins',
-      features: 'Kitchenette equipada, Frigorífico, Varanda privativa',
+      rentPrice: 32000, // 32.000 MT
+      currentTenantName: 'Graça Cossa',
+      features: 'Kitchenette equipada, Geleira, Ar condicionado, Varanda privativa, Água quente contínua',
       createdAt: new Date().toISOString(),
     },
     {
@@ -44,49 +44,49 @@ export async function seedCondominiumData() {
       floor: '2º Andar',
       type: 'Suite Master com Varanda',
       status: 'available',
-      rentPrice: 490,
-      features: 'Varanda espaçosa, WC moderno, Ar condicionado, Vista para o jardim',
+      rentPrice: 28000, // 28.000 MT
+      features: 'Varanda espaçosa, WC moderno, Ar condicionado, Termoacumulador, Vista para o jardim',
       createdAt: new Date().toISOString(),
     },
     {
       unitNumber: 'Q-202',
       block: 'Bloco B (Poente)',
       floor: '2º Andar',
-      type: 'Quarto Duplo',
+      type: 'Quarto Duplo Climatizado',
       status: 'maintenance',
-      rentPrice: 460,
-      features: '2 camas individuais, Em processo de pintura e reparo elétrico',
+      rentPrice: 24000, // 24.000 MT
+      features: '2 camas individuais, Ar condicionado, Em reparação do disjuntor elétrico e pintura',
       createdAt: new Date().toISOString(),
     },
     {
       unitNumber: 'Q-203',
       block: 'Bloco B (Poente)',
       floor: '2º Andar',
-      type: 'Quarto Individual Standard',
+      type: 'Quarto Individual Executivo',
       status: 'available',
-      rentPrice: 340,
-      features: 'Luminoso, Mobilado, Acesso à cozinha comum',
+      rentPrice: 19500, // 19.500 MT
+      features: 'Muito luminoso, Mobilado, Acesso à cozinha comum do bloco, Internet Fibra 100Mbps',
       createdAt: new Date().toISOString(),
     },
     {
       unitNumber: 'Q-301',
       block: 'Bloco C (Cobertura)',
       floor: '3º Andar',
-      type: 'Apartamento T1 Integrado',
+      type: 'Apartamento T1 Cobertura',
       status: 'occupied',
-      rentPrice: 720,
-      currentTenantName: 'Carlos Eduardo Oliveira',
-      features: 'Sala, Quarto com armário, Cozinha privativa, Terraço',
+      rentPrice: 45000, // 45.000 MT
+      currentTenantName: 'Delfim Chissano',
+      features: 'Sala ampla, Quarto com closet, Cozinha privativa equipada, Terraço privativo com vista mar',
       createdAt: new Date().toISOString(),
     },
     {
       unitNumber: 'Q-302',
       block: 'Bloco C (Cobertura)',
       floor: '3º Andar',
-      type: 'Suite Executiva',
+      type: 'Suite Executiva Climatizada',
       status: 'reserved',
-      rentPrice: 520,
-      features: 'Mobilada com cama King, Secretária ergonómica, Smart TV',
+      rentPrice: 35000, // 35.000 MT
+      features: 'Cama King Size, Ar condicionado Inverter, Secretária ergonómica, Smart TV 55", Termoacumulador',
       createdAt: new Date().toISOString(),
     },
   ];
@@ -96,38 +96,38 @@ export async function seedCondominiumData() {
     batch.set(ref, u);
   });
 
-  // 2. Inquilinos / Clientes
+  // 2. Inquilinos / Moradores com dados Moçambicanos (NUIT, B.I., +258)
   const sampleTenants: Omit<Tenant, 'id'>[] = [
     {
-      name: 'António Silva',
-      email: 'antonio.silva@email.pt',
-      phone: '+351 912 345 678',
-      document: 'NIF: 245981320',
+      name: 'Arsénio Mabunda',
+      email: 'arsenio.mabunda@gmail.com',
+      phone: '+258 84 312 4589',
+      document: 'NUIT: 400192837 | BI: 110100482910M',
       unitNumber: 'Q-101',
       status: 'active',
-      emergencyContact: 'Maria Silva (Mãe) - 918 223 344',
+      emergencyContact: 'Teresa Mabunda (Esposa) - +258 84 772 1199',
       moveInDate: '2024-02-01',
       createdAt: new Date().toISOString(),
     },
     {
-      name: 'Beatriz Martins',
-      email: 'beatriz.m@email.pt',
-      phone: '+351 923 456 789',
-      document: 'NIF: 267104928',
+      name: 'Graça Cossa',
+      email: 'graca.cossa@mcel.co.mz',
+      phone: '+258 87 456 1230',
+      document: 'NUIT: 400781293 | BI: 110200591024F',
       unitNumber: 'Q-103',
       status: 'active',
-      emergencyContact: 'Pedro Martins (Irmão) - 931 556 778',
+      emergencyContact: 'Elísio Cossa (Irmão) - +258 82 443 8812',
       moveInDate: '2024-05-15',
       createdAt: new Date().toISOString(),
     },
     {
-      name: 'Carlos Eduardo Oliveira',
-      email: 'carlos.edu@email.pt',
-      phone: '+351 934 567 890',
-      document: 'NIF: 231889412',
+      name: 'Delfim Chissano',
+      email: 'delfim.chissano@standardbank.co.mz',
+      phone: '+258 86 987 6543',
+      document: 'NUIT: 400349102 | BI: 110100329014M',
       unitNumber: 'Q-301',
       status: 'active',
-      emergencyContact: 'Helena Oliveira (Esposa) - 964 112 233',
+      emergencyContact: 'Helena Chissano (Mãe) - +258 84 661 5522',
       moveInDate: '2023-11-10',
       createdAt: new Date().toISOString(),
     },
@@ -146,32 +146,32 @@ export async function seedCondominiumData() {
   const sampleStaff = [
     {
       id: staff1Id,
-      name: 'Dona Maria de Fátima',
-      phone: '+351 965 112 334',
-      email: 'maria.fatima.limpezas@gmail.com',
+      name: 'Dona Rosa Macamo',
+      phone: '+258 84 551 2234',
+      email: 'rosa.macamo@condominio.co.mz',
       status: 'active' as const,
-      shiftPreference: 'Período da Manhã (08:00 - 13:00)',
-      notes: 'Especialista em higienização de áreas comuns e lavagem de halls',
+      shiftPreference: 'Período da Manhã (07:30 - 13:00)',
+      notes: 'Especialista em higienização dos halls sociais, átrios e vidraçaria do Bloco A',
       createdAt: new Date().toISOString(),
     },
     {
       id: staff2Id,
-      name: 'Manuel Rodrigues',
-      phone: '+351 961 889 001',
-      email: 'manuel.rodrigues@condominio.pt',
+      name: 'Mateus Tembe',
+      phone: '+258 87 662 3345',
+      email: 'mateus.tembe@condominio.co.mz',
       status: 'active' as const,
       shiftPreference: 'Período da Manhã e Tarde',
-      notes: 'Responsável pela garagem, depósito de lixo e áreas exteriores da piscina',
+      notes: 'Responsável pela garagem, área do gerador de emergência e pátio exterior',
       createdAt: new Date().toISOString(),
     },
     {
       id: staff3Id,
-      name: 'Carla Vanessa Santos',
-      phone: '+351 938 776 554',
-      email: 'carla.santos@condominio.pt',
+      name: 'Amina Guambe',
+      phone: '+258 86 773 4456',
+      email: 'amina.guambe@condominio.co.mz',
       status: 'active' as const,
       shiftPreference: 'Período da Tarde (13:00 - 18:00)',
-      notes: 'Limpeza de escadarias, vidraçaria e salão de eventos',
+      notes: 'Limpeza de escadarias, corredores do piso 2 e 3 e sala de reuniões',
       createdAt: new Date().toISOString(),
     },
   ];
@@ -181,57 +181,57 @@ export async function seedCondominiumData() {
     batch.set(doc(db, 'cleaning_staff', id), data);
   });
 
-  // 4. Escalas de Horários (com destaque para o período da manhã e departamentos)
+  // 4. Escalas de Horários (com turno da manhã destacado)
   const today = new Date().toISOString().split('T')[0];
   const sampleSchedules: Omit<CleaningSchedule, 'id'>[] = [
     {
       staffId: staff1Id,
-      staffName: 'Dona Maria de Fátima',
+      staffName: 'Dona Rosa Macamo',
       date: today,
       shift: 'morning',
-      departmentOrArea: 'Hall de Entrada & Portaria Principal',
+      departmentOrArea: 'Portaria Principal & Hall da Baía',
       status: 'in_progress',
-      notes: 'Desinfeção do balcão, limpeza dos tapetes e polimento do piso de granito',
+      notes: 'Desinfeção do balcão, limpeza dos tapetes e polimento do piso',
       createdAt: new Date().toISOString(),
     },
     {
       staffId: staff1Id,
-      staffName: 'Dona Maria de Fátima',
+      staffName: 'Dona Rosa Macamo',
       date: today,
       shift: 'morning',
       departmentOrArea: 'Corredores & Átrios (Bloco A - Pisos 1 e 2)',
       status: 'scheduled',
-      notes: 'Aspiração e passagem de mopa úmida desinfetante',
+      notes: 'Passagem de mopa úmida e limpeza de vidros panorâmicos',
       createdAt: new Date().toISOString(),
     },
     {
       staffId: staff2Id,
-      staffName: 'Manuel Rodrigues',
+      staffName: 'Mateus Tembe',
       date: today,
       shift: 'morning',
-      departmentOrArea: 'Garagem Subsolo & Depósito de Lixo',
+      departmentOrArea: 'Garagem, Área do Gerador & Contentores',
       status: 'in_progress',
-      notes: 'Varrição mecânica, lavagem do depósito e higienização dos contentores',
+      notes: 'Lavagem mecânica do piso da garagem e inspeção do reservatório de água',
       createdAt: new Date().toISOString(),
     },
     {
       staffId: staff2Id,
-      staffName: 'Manuel Rodrigues',
+      staffName: 'Mateus Tembe',
       date: today,
       shift: 'afternoon',
       departmentOrArea: 'Piscina & Zona de Lazer Exterior',
       status: 'scheduled',
-      notes: 'Recolha de folhas, lavagem do deck e organização das espreguiçadeiras',
+      notes: 'Recolha de resíduos, aspiração da piscina e limpeza das mesas de apoio',
       createdAt: new Date().toISOString(),
     },
     {
       staffId: staff3Id,
-      staffName: 'Carla Vanessa Santos',
+      staffName: 'Amina Guambe',
       date: today,
       shift: 'afternoon',
       departmentOrArea: 'Escadarias de Emergência & Elevadores',
       status: 'scheduled',
-      notes: 'Limpeza dos espelhos dos elevadores, botoneiras e corrimões de aço inox',
+      notes: 'Higienização dos botões dos elevadores, espelhos e corrimões de aço',
       createdAt: new Date().toISOString(),
     },
   ];
@@ -241,39 +241,39 @@ export async function seedCondominiumData() {
     batch.set(ref, sch);
   });
 
-  // 5. Relatórios de Manutenção (Inquilinos reportando defeitos)
+  // 5. Relatórios de Manutenção (Contexto Moçambicano: Climatização, Eletrobomba, EDM)
   const sampleReports: Omit<MaintenanceReport, 'id'>[] = [
     {
-      tenantName: 'António Silva',
-      tenantContact: '+351 912 345 678',
+      tenantName: 'Arsénio Mabunda',
+      tenantContact: '+258 84 312 4589',
       unitNumber: 'Q-101',
-      category: 'Instalação Elétrica Defeituosa',
+      category: 'Ar Condicionado / Ventilação',
       urgency: 'high',
-      description: 'O disjuntor do quarto cai repetidamente ao ligar o aquecedor e a tomada junto à cama faz faísca.',
+      description: 'O ar condicionado Split do quarto não está a arrefecer devidamente e está a pingar água na parede lateral.',
       status: 'scheduled',
-      adminNotes: 'Eletricista Sr. Joaquim agendado para hoje às 15:30 com chave de substituição.',
+      adminNotes: 'Técnico de climatização Sr. Armando agendado com recarga de gás e desobstrução do dreno.',
       createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
     },
     {
-      tenantName: 'Beatriz Martins',
-      tenantContact: '+351 923 456 789',
+      tenantName: 'Graça Cossa',
+      tenantContact: '+258 87 456 1230',
       unitNumber: 'Q-103',
       category: 'Tubos de Água / Canalização / Fugas',
       urgency: 'emergency',
-      description: 'Existe uma fuga de água constante por baixo do lava-loiça da kitchenette que está a alagar o móvel.',
+      description: 'Existe uma fuga de água sob o lava-loiça da kitchenette que está a transbordar pelo armário.',
       status: 'open',
-      adminNotes: 'Canalizador notificado com máxima urgência. Válvula de corte recomendada temporariamente.',
+      adminNotes: 'Canalizador notificado com máxima urgência. Torneira de segurança fechada temporariamente.',
       createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
     },
     {
-      tenantName: 'Carlos Eduardo Oliveira',
-      tenantContact: '+351 934 567 890',
+      tenantName: 'Delfim Chissano',
+      tenantContact: '+258 86 987 6543',
       unitNumber: 'Q-301',
       category: 'Portas / Fechaduras & Segurança',
       urgency: 'medium',
-      description: 'A fechadura da porta principal da varanda está presa e não tranca com chave.',
+      description: 'A fechadura da porta da varanda para o terraço está presa com a maresia e tem dificuldade em trancar.',
       status: 'resolved',
-      adminNotes: 'Cilindro e tranca substituídos pela equipa de serralharia.',
+      adminNotes: 'Canhão lubrificado com produto anticorrosivo e chave mestre testada.',
       createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
       resolvedAt: new Date(Date.now() - 3600000 * 12).toISOString(),
     },
@@ -284,31 +284,31 @@ export async function seedCondominiumData() {
     batch.set(ref, rep);
   });
 
-  // 6. Avisos / Comunicados do Condomínio para Notificações Push
+  // 6. Avisos / Comunicados do Condomínio
   const sampleAnnouncements: Omit<Announcement, 'id'>[] = [
     {
-      title: 'Interrupção Temporária de Água para Reparação',
-      message: 'Informamos todos os moradores que haverá corte temporário no fornecimento de água amanhã entre as 09:00 e as 11:30 para substituição da válvula principal.',
+      title: 'Manutenção Preventiva do Gerador & Eletrobomba de Água',
+      message: 'Informamos os estimados condóminos que amanhã, entre as 09:30 e as 11:30, será feita a revisão geral do gerador a diesel de emergência e dos filtros da cisterna.',
       priority: 'urgent',
-      category: 'Manutenção Hidráulica',
+      category: 'Instalações Técnicas',
       sentAt: new Date(Date.now() - 3600000 * 3).toISOString(),
-      authorName: 'Administração do Condomínio',
+      authorName: 'Administração Baía de Maputo',
     },
     {
-      title: 'Assembleia Geral Ordinária de Condomínio',
-      message: 'Convocatória para a reunião anual de condóminos na próxima sexta-feira, às 19:30, no Salão de Festas. Pauta: Orçamento 2026/2027 e melhorias de segurança.',
+      title: 'Assembleia Ordinária de Condóminos - Maputo',
+      message: 'Convocatória para a reunião anual no Salão Multiuso na próxima sexta-feira às 18:00. Pauta: Orçamento 2026/2027 com IVA e reforço da segurança patrimonial.',
       priority: 'normal',
-      category: 'Reunião Geral',
+      category: 'Assembleia Geral',
       sentAt: new Date(Date.now() - 3600000 * 24).toISOString(),
       authorName: 'Síndico Geral',
     },
     {
-      title: 'Higienização Profunda da Garagem e Lavagem dos Pisos',
-      message: 'Pedimos a todos os residentes que retirem viaturas do piso -1 durante o período da manhã da próxima terça-feira para lavagem com água de alta pressão.',
+      title: 'Limpeza e Desinfeção dos Reservatórios de Água Potável',
+      message: 'Pedimos a cooperação de todos para armazenamento prévio de água. A higienização dos tanques superiores decorrerá na terça-feira das 08:00 às 12:00.',
       priority: 'low',
-      category: 'Limpeza & Zelo',
+      category: 'Limpeza & Higiene',
       sentAt: new Date(Date.now() - 3600000 * 72).toISOString(),
-      authorName: 'Equipa de Zelo e Limpeza',
+      authorName: 'Equipa de Zelo',
     },
   ];
 
@@ -317,56 +317,73 @@ export async function seedCondominiumData() {
     batch.set(ref, an);
   });
 
-  // 7. Pagamentos de Mensalidades
+  // 7. Pagamentos de Mensalidades em Meticais (MT) com Aplicação do IVA (16%)
+  // Moçambique: Quota Base + IVA (16%) = Total a Pagar em MT
   const samplePayments: Omit<Payment, 'id'>[] = [
     {
-      tenantName: 'António Silva',
+      tenantName: 'Arsénio Mabunda',
       unitNumber: 'Q-101',
-      amount: 420,
+      baseAmount: 25000,           // 25.000,00 MT (Base)
+      taxRate: 16,                 // 16% IVA
+      taxAmount: 4000,             // 4.000,00 MT (IVA 16%)
+      amount: 29000,               // 29.000,00 MT (Total)
+      currency: 'MT',
       referenceMonth: 'Outubro 2026',
       dueDate: '2026-10-08',
       paymentDate: '2026-10-03',
       status: 'paid',
-      paymentMethod: 'MB WAY',
-      receiptNumber: 'REC-2026-101',
-      notes: 'Pagamento recebido via MB WAY',
+      paymentMethod: 'M-Pesa (Vodacom)',
+      receiptNumber: 'REC-MZ-2026-101',
+      notes: 'Recebido via M-Pesa | ID Transação: MP261003.841029. Quitação com IVA a 16%.',
       createdAt: new Date().toISOString(),
     },
     {
-      tenantName: 'Beatriz Martins',
+      tenantName: 'Graça Cossa',
       unitNumber: 'Q-103',
-      amount: 580,
+      baseAmount: 32000,           // 32.000,00 MT (Base)
+      taxRate: 16,                 // 16% IVA
+      taxAmount: 5120,             // 5.120,00 MT (IVA 16%)
+      amount: 37120,               // 37.120,00 MT (Total)
+      currency: 'MT',
       referenceMonth: 'Outubro 2026',
       dueDate: '2026-10-08',
       status: 'pending',
-      paymentMethod: 'Multibanco',
-      receiptNumber: 'PEND-2026-103',
-      notes: 'Referência Multibanco ativa para pagamento',
+      paymentMethod: 'Transferência Bancária - Millennium BIM',
+      receiptNumber: 'FAT-MZ-2026-103',
+      notes: 'Fatura proforma emitida com IVA 16%. Aguarda confirmação de transferência bancária BIM.',
       createdAt: new Date().toISOString(),
     },
     {
-      tenantName: 'Carlos Eduardo Oliveira',
+      tenantName: 'Delfim Chissano',
       unitNumber: 'Q-301',
-      amount: 720,
+      baseAmount: 45000,           // 45.000,00 MT (Base)
+      taxRate: 16,                 // 16% IVA
+      taxAmount: 7200,             // 7.200,00 MT (IVA 16%)
+      amount: 52200,               // 52.200,00 MT (Total)
+      currency: 'MT',
       referenceMonth: 'Setembro 2026',
       dueDate: '2026-09-08',
       paymentDate: '2026-09-06',
       status: 'paid',
-      paymentMethod: 'Transferência Bancária',
-      receiptNumber: 'REC-2026-089',
-      notes: 'Comprovativo de transferência validado',
+      paymentMethod: 'Transferência Bancária - BCI',
+      receiptNumber: 'REC-MZ-2026-089',
+      notes: 'Comprovativo de transferência BCI verificado pela administração. IVA 16% recolhido.',
       createdAt: new Date().toISOString(),
     },
     {
-      tenantName: 'Carlos Eduardo Oliveira',
+      tenantName: 'Delfim Chissano',
       unitNumber: 'Q-301',
-      amount: 720,
+      baseAmount: 45000,           // 45.000,00 MT (Base)
+      taxRate: 16,                 // 16% IVA
+      taxAmount: 7200,             // 7.200,00 MT (IVA 16%)
+      amount: 52200,               // 52.200,00 MT (Total)
+      currency: 'MT',
       referenceMonth: 'Outubro 2026',
       dueDate: '2026-10-05',
       status: 'overdue',
-      paymentMethod: 'Transferência Bancária',
-      receiptNumber: 'ATRASO-2026-301',
-      notes: 'Lembrete de pagamento em atraso enviado',
+      paymentMethod: 'e-Mola (Movitel)',
+      receiptNumber: 'FAT-MZ-2026-301',
+      notes: 'Mensalidade em atraso com incidência de IVA 16%. Notificação de cobrança enviada.',
       createdAt: new Date().toISOString(),
     },
   ];

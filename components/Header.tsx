@@ -12,10 +12,12 @@ import {
   Check, 
   User, 
   ShieldCheck,
-  Radio
+  Radio,
+  LogOut
 } from 'lucide-react';
 import { NotificationService } from '../lib/notifications';
 import { Announcement } from '../lib/firebase';
+import { useAuth } from '../lib/authContext';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -48,7 +50,9 @@ export function Header({
   announcements,
   onSelectTab,
 }: HeaderProps) {
+  const { user, userProfile, signOutUser } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>(() => NotificationService.getPermissionState());
 
   const handleRequestPush = async () => {
@@ -231,19 +235,61 @@ export function Header({
           )}
         </div>
 
-        {/* User / Administration Avatar Badge */}
-        <div className="flex items-center space-x-2.5 pl-2 sm:pl-3 border-l border-slate-200">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-            {activeView === 'admin' ? 'AD' : 'IN'}
-          </div>
-          <div className="hidden sm:block text-left text-xs leading-tight">
-            <span className="font-bold text-slate-800 block">
-              {activeView === 'admin' ? 'Síndico / Admin' : 'Inquilino'}
-            </span>
-            <span className="text-[11px] text-slate-400">
-              {activeView === 'admin' ? 'Gestão Geral' : 'Quarto Q-101'}
-            </span>
-          </div>
+        {/* User / Administration Avatar Badge & Dropdown */}
+        <div className="relative pl-2 sm:pl-3 border-l border-slate-200">
+          <button
+            type="button"
+            onClick={() => setShowUserMenu(!showUserMenu)}
+            className="flex items-center space-x-2.5 p-1 rounded-xl hover:bg-slate-50 transition-colors text-left"
+            title="Conta do Utilizador"
+          >
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+              {userProfile?.role === 'admin' || activeView === 'admin' ? 'AD' : 'IN'}
+            </div>
+            <div className="hidden sm:block text-left text-xs leading-tight">
+              <span className="font-bold text-slate-800 block truncate max-w-[140px]">
+                {userProfile?.displayName || user?.email?.split('@')[0] || (activeView === 'admin' ? 'Síndico / Admin' : 'Inquilino')}
+              </span>
+              <span className="text-[11px] text-slate-400 block truncate max-w-[140px]">
+                {user?.email || (activeView === 'admin' ? 'Gestão Geral' : 'Quarto Q-101')}
+              </span>
+            </div>
+          </button>
+
+          {/* User Account Popover */}
+          {showUserMenu && (
+            <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-slate-200 shadow-xl p-4 z-50 text-slate-800 animate-in fade-in">
+              <div className="pb-3 border-b border-slate-100">
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
+                  Conta Autenticada
+                </span>
+                <p className="font-bold text-sm text-slate-900 truncate">
+                  {userProfile?.displayName || 'Utilizador CondoGest'}
+                </p>
+                <p className="text-xs text-slate-500 truncate">
+                  {user?.email || 'Sessão ativa'}
+                </p>
+                <div className="mt-2 inline-flex items-center space-x-1 px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700 text-[10px] font-bold border border-blue-100">
+                  <ShieldCheck className="w-3 h-3" />
+                  <span>{userProfile?.role === 'admin' ? 'Perfil Síndico / Admin' : 'Perfil Morador / Inquilino'}</span>
+                </div>
+              </div>
+
+              <div className="mt-3 space-y-1">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setShowUserMenu(false);
+                    await signOutUser();
+                  }}
+                  className="w-full py-2 px-3 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-bold flex items-center space-x-2 transition-colors"
+                >
+                  <LogOut className="w-4 h-4 text-rose-600" />
+                  <span>Terminar Sessão</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
       </div>

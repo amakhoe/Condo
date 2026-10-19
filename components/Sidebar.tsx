@@ -16,9 +16,11 @@ import {
   X,
   Layers,
   Sun,
-  CreditCard
+  CreditCard,
+  LogOut
 } from 'lucide-react';
 import { Announcement } from '../lib/firebase';
+import { useAuth } from '../lib/authContext';
 
 interface SidebarProps {
   activeView: 'admin' | 'tenant';
@@ -53,6 +55,7 @@ export function Sidebar({
   isOpen,
   onClose,
 }: SidebarProps) {
+  const { user, userProfile, signOutUser } = useAuth();
 
   const navItems = [
     {
@@ -145,7 +148,7 @@ export function Sidebar({
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 font-medium truncate max-w-[150px]">
-                  Solar dos Pinheiros
+                  Baía de Maputo (MZ)
                 </p>
               </div>
             </div>
@@ -257,26 +260,63 @@ export function Sidebar({
         </div>
 
         {/* Bottom Section */}
-        <div className="p-4 border-t border-slate-100 space-y-3">
+        <div className="p-4 border-t border-slate-100 space-y-2.5">
+          {/* User Account Card */}
+          {user && (
+            <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center space-x-2 truncate">
+                  <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-[11px] shrink-0">
+                    {userProfile?.role === 'admin' ? 'AD' : 'IN'}
+                  </div>
+                  <div className="truncate">
+                    <span className="font-bold text-slate-800 block truncate text-[11px] leading-tight">
+                      {userProfile?.displayName || user.email?.split('@')[0]}
+                    </span>
+                    <span className="text-[10px] text-slate-400 block truncate leading-tight">
+                      {user.email}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={signOutUser}
+                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
+                  title="Terminar Sessão"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px]">
+                <span className="text-slate-500 font-medium">Perfil:</span>
+                <span className="font-bold text-blue-700">
+                  {userProfile?.role === 'admin' ? 'Síndico / Admin' : `Morador (${userProfile?.unitNumber || 'Q-101'})`}
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Quick Demo Data Seeder */}
           <button
             type="button"
             onClick={onSeedData}
             disabled={isSeeding}
-            className="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center space-x-2 transition-colors disabled:opacity-50"
+            className="w-full py-2 px-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 shadow-2xs"
             title="Preencher com dados demonstrativos de quartos, inquilinos e escalas"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-blue-600 ${isSeeding ? 'animate-spin' : ''}`} />
-            <span>{isSeeding ? 'A Carregar...' : 'Carregar Dados Demo'}</span>
+            <span>{isSeeding ? 'A Carregar...' : 'Dados Moçambique (MT & IVA)'}</span>
           </button>
 
           {/* Real-time Status Indicator */}
-          <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-500">
+          <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-500">
             <span className="flex items-center space-x-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="font-medium text-slate-700">Firestore Ativo</span>
+              <span className="font-medium text-slate-700">Firebase Auth & DB</span>
             </span>
-            <span className="text-blue-600 font-semibold">Tempo Real</span>
+            <span className="text-blue-600 font-semibold">Ativo</span>
           </div>
         </div>
       </aside>

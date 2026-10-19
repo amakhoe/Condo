@@ -117,6 +117,20 @@
         "createdAt": { "type": "string" }
       },
       "required": ["tenantName", "unitNumber", "amount", "referenceMonth", "dueDate", "status"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Perfil de utilizador autenticado (Administrador ou Inquilino)",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "tenant"] },
+        "unitNumber": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
     }
   },
   "firestore": {
@@ -147,6 +161,10 @@
     "/payments/{paymentId}": {
       "schema": "Payment",
       "description": "Coleção de pagamentos de mensalidades e recibos de rendas"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Perfis de utilizadores autenticados"
     }
   }
 }

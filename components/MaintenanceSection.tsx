@@ -20,11 +20,13 @@ import {
   Check, 
   MessageSquare, 
   Trash2,
-  AlertOctagon
+  AlertOctagon,
+  FileDown
 } from 'lucide-react';
 import { MaintenanceReport, db, OperationType, handleFirestoreError } from '../lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { NotificationService } from '../lib/notifications';
+import { MaintenancePdfExportModal } from './MaintenancePdfExportModal';
 
 interface MaintenanceSectionProps {
   reports: MaintenanceReport[];
@@ -46,6 +48,7 @@ export function MaintenanceSection({ reports, defaultUnitFilter, onClearUnitFilt
   const [urgencyFilter, setUrgencyFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Note Modal
@@ -188,13 +191,24 @@ export function MaintenanceSection({ reports, defaultUnitFilter, onClearUnitFilt
           </div>
         </div>
 
-        <button
-          onClick={handleOpenReportModal}
-          className="inline-flex items-center justify-center space-x-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-2xl shadow-sm shadow-blue-600/30 transition-all text-xs sm:text-sm"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Reportar Novo Defeito</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setIsPdfModalOpen(true)}
+            className="inline-flex items-center justify-center space-x-2 px-4 py-2.5 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-bold rounded-2xl border border-slate-300 shadow-xs transition-all text-xs sm:text-sm hover:border-blue-400 hover:text-blue-700"
+            title="Exportar histórico de reparações para documento PDF"
+          >
+            <FileDown className="w-4 h-4 text-blue-600" />
+            <span>Exportar Relatório PDF</span>
+          </button>
+
+          <button
+            onClick={handleOpenReportModal}
+            className="inline-flex items-center justify-center space-x-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-2xl shadow-sm shadow-blue-600/30 transition-all text-xs sm:text-sm"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Reportar Novo Defeito</span>
+          </button>
+        </div>
       </div>
 
       {/* Unit Filter Warning if active */}
@@ -771,6 +785,14 @@ export function MaintenanceSection({ reports, defaultUnitFilter, onClearUnitFilt
           </div>
         </div>
       )}
+
+      {/* PDF Export Modal */}
+      <MaintenancePdfExportModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        reports={reports}
+        initialUnitFilter={defaultUnitFilter}
+      />
 
     </div>
   );

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Unit, db, OperationType, handleFirestoreError } from '../lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { formatMZN } from '../lib/utils';
 
 interface UnitsSectionProps {
   units: Unit[];
@@ -36,8 +37,8 @@ export function UnitsSection({ units }: UnitsSectionProps) {
   const [floor, setFloor] = useState('1º Andar');
   const [type, setType] = useState('Quarto Individual');
   const [status, setStatus] = useState<'available' | 'occupied' | 'maintenance' | 'reserved'>('available');
-  const [rentPrice, setRentPrice] = useState<number>(350);
-  const [features, setFeatures] = useState('Mobilado, Janela exterior, Secretária');
+  const [rentPrice, setRentPrice] = useState<number>(25000);
+  const [features, setFeatures] = useState('Mobilado, Ar condicionado Split, Varanda');
   const [currentTenantName, setCurrentTenantName] = useState('');
 
   // Counters
@@ -77,8 +78,8 @@ export function UnitsSection({ units }: UnitsSectionProps) {
       setFloor('1º Andar');
       setType('Quarto Individual');
       setStatus('available');
-      setRentPrice(380);
-      setFeatures('Mobilado, Roupeiro, WiFi');
+      setRentPrice(25000);
+      setFeatures('Mobilado, Ar condicionado, WiFi Fibra');
       setCurrentTenantName('');
     }
     setIsModalOpen(true);
@@ -395,9 +396,9 @@ export function UnitsSection({ units }: UnitsSectionProps) {
                   {/* Rent Price & Tenant */}
                   <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                     <div>
-                      <span className="text-slate-400 text-[11px] block">Renda Mensal</span>
+                      <span className="text-slate-400 text-[11px] block">Renda Mensal Base</span>
                       <strong className="text-base font-extrabold text-slate-900">
-                        {unit.rentPrice ? `${unit.rentPrice} € / mês` : 'Sob consulta'}
+                        {unit.rentPrice ? `${formatMZN(unit.rentPrice)} / mês` : 'Sob consulta'}
                       </strong>
                     </div>
 
@@ -563,12 +564,12 @@ export function UnitsSection({ units }: UnitsSectionProps) {
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Preço / Renda Mensal (€)</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Preço / Renda Mensal Base (MT)</label>
                   <input
                     type="number"
                     value={rentPrice}
                     onChange={(e) => setRentPrice(Number(e.target.value))}
-                    placeholder="Ex: 400"
+                    placeholder="Ex: 25000"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   />
                 </div>

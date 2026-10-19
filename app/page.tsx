@@ -31,10 +31,15 @@ import { CleaningSection } from '../components/CleaningSection';
 import { MaintenanceSection } from '../components/MaintenanceSection';
 import { AnnouncementsSection } from '../components/AnnouncementsSection';
 import { TenantPortalView } from '../components/TenantPortalView';
+import { AuthView } from '../components/AuthView';
+import { AuthProvider, useAuth } from '../lib/authContext';
 import { Building2, RefreshCw } from 'lucide-react';
 
-export default function HomePage() {
-  const [activeView, setActiveView] = useState<'admin' | 'tenant'>('admin');
+function CondoApp() {
+  const { user, userProfile, loading } = useAuth();
+  const [selectedView, setSelectedView] = useState<'admin' | 'tenant' | null>(null);
+  const activeView = selectedView ?? (userProfile?.role === 'tenant' ? 'tenant' : 'admin');
+  const setActiveView = (view: 'admin' | 'tenant') => setSelectedView(view);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'units' | 'tenants' | 'payments' | 'cleaning' | 'maintenance' | 'announcements'>('dashboard');
   const [selectedUnitReportFilter, setSelectedUnitReportFilter] = useState<string | undefined>(undefined);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -60,6 +65,7 @@ export default function HomePage() {
 
   // Listeners in Real-time with onSnapshot
   useEffect(() => {
+    if (!user) return;
     const unsubs: (() => void)[] = [];
 
     try {
@@ -202,15 +208,15 @@ export default function HomePage() {
     return () => {
       unsubs.forEach((u) => u());
     };
-  }, []);
+  }, [user]);
 
   // Quick Seed Handler
   const handleSeed = async () => {
     setIsSeeding(true);
     try {
       await seedCondominiumData();
-      NotificationService.sendPush('Dados de Demonstração Carregados!', {
-        body: 'Quartos, inquilinos, mensalidades, escalas e relatórios foram gerados com sucesso.',
+      NotificationService.sendPush('Dados Moçambicanos Carregados!', {
+        body: 'Quartos, inquilinos, mensalidades em Meticais (MT) com IVA a 16% e escalas foram gerados.',
         soundType: 'success',
       });
     } finally {
@@ -242,6 +248,24 @@ export default function HomePage() {
   const today = new Date().toISOString().split('T')[0];
   const todayCleaningCount = cleaningSchedules.filter((s) => s.date === today).length;
   const morningCleaningCount = cleaningSchedules.filter((s) => s.date === today && s.shift === 'morning').length;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center space-y-3">
+          <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+            <Building2 className="w-8 h-8 animate-pulse" />
+          </div>
+          <span className="font-bold text-slate-900 text-base">CondoGest</span>
+          <span className="text-xs text-slate-500">A verificar autenticação no Firebase...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthView />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-blue-600 selection:text-white">
@@ -379,5 +403,13 @@ export default function HomePage() {
       </div>
 
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <AuthProvider>
+      <CondoApp />
+    </AuthProvider>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Building2, 
   AlertTriangle, 
@@ -16,7 +16,8 @@ import {
   ShieldAlert,
   BarChart3,
   PieChart as PieChartIcon,
-  CreditCard
+  CreditCard,
+  FileDown
 } from 'lucide-react';
 import { 
   Unit, 
@@ -26,6 +27,8 @@ import {
   MaintenanceReport,
   Payment
 } from '../lib/firebase';
+import { MaintenancePdfExportModal } from './MaintenancePdfExportModal';
+import { formatMZN } from '../lib/utils';
 import {
   ResponsiveContainer,
   PieChart,
@@ -61,6 +64,7 @@ export function DashboardSection({
   payments,
   onNavigateTab,
 }: DashboardSectionProps) {
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const mounted = React.useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -185,7 +189,15 @@ export function DashboardSection({
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setIsPdfModalOpen(true)}
+            className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-xs font-bold transition-all shadow-xs hover:border-blue-400 hover:text-blue-700"
+            title="Exportar histórico e relatório de manutenção para PDF"
+          >
+            <FileDown className="w-4 h-4 text-blue-600" />
+            <span>Exportar Reparos (PDF)</span>
+          </button>
           <span className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold">
             <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
             <span>Sincronização em Tempo Real</span>
@@ -216,7 +228,7 @@ export function DashboardSection({
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
               <span>{availableUnits} quartos vagos</span>
             </span>
-            <span className="text-slate-500 font-semibold">{monthlyRevenue} € / mês</span>
+            <span className="text-slate-500 font-semibold">{formatMZN(monthlyRevenue)} / mês</span>
           </div>
         </div>
 
@@ -323,10 +335,10 @@ export function DashboardSection({
               )}
             </div>
             <h3 className="text-lg sm:text-xl font-black mt-0.5">
-              Receita Arrecadada: {totalPaid} €
+              Receita Arrecadada: {formatMZN(totalPaid)}
             </h3>
             <p className="text-xs text-blue-100 mt-0.5">
-              {pendingCount} mensalidades pendentes ({totalPending} €) • {overdueCount} em atraso ({totalOverdue} €)
+              {pendingCount} mensalidades pendentes ({formatMZN(totalPending)}) • {overdueCount} em atraso ({formatMZN(totalOverdue)})
             </p>
           </div>
         </div>
@@ -440,13 +452,23 @@ export function DashboardSection({
               </div>
               <h3 className="font-bold text-slate-900 text-base">Relatórios de Defeitos por Categoria</h3>
             </div>
-            <button
-              onClick={() => onNavigateTab('maintenance')}
-              className="text-xs text-amber-600 hover:text-amber-700 font-bold flex items-center space-x-1"
-            >
-              <span>Ver Chamados</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setIsPdfModalOpen(true)}
+                className="text-xs text-blue-700 hover:text-blue-800 font-bold flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors"
+                title="Exportar histórico de reparações para PDF"
+              >
+                <FileDown className="w-3.5 h-3.5" />
+                <span>Exportar PDF</span>
+              </button>
+              <button
+                onClick={() => onNavigateTab('maintenance')}
+                className="text-xs text-amber-600 hover:text-amber-700 font-bold flex items-center space-x-1"
+              >
+                <span>Ver Chamados</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           <p className="text-xs text-slate-500 mb-4">
@@ -635,6 +657,13 @@ export function DashboardSection({
         </div>
 
       </div>
+
+      {/* PDF Export Modal */}
+      <MaintenancePdfExportModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        reports={maintenanceReports}
+      />
 
     </div>
   );
